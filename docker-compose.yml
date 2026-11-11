@@ -1,0 +1,23 @@
+services:
+  agent-hermes:
+    image: python:3.11-slim
+    container_name: agent-hermes
+    working_dir: /app
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - APP_PORT=8000
+    depends_on:
+      - redis
+    command: sh -c "pip install --no-cache-dir fastapi uvicorn redis && uvicorn main:app --host 0.0.0.0 --port 8000"
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: agent-hermes-redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
